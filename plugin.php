@@ -30,18 +30,8 @@ CREATE TABLE `simple_vocab_terms` (
     
     public static function initialize()
     {
-        // filter elements
-        $db = get_db();
-        $simpleVocabTerms = $db->getTable('SimpleVocabTerm')->findAll();
-        foreach ($simpleVocabTerms as $simpleVocabTerm) {
-            $element = $db->getTable('Element')->find($simpleVocabTerm->element_id);
-            $elementSet = $db->getTable('ElementSet')->find($element->element_set_id);
-            add_filter(array('Form', 
-                             'Item', 
-                             $elementSet->name, 
-                             $element->name), 
-                      'SimpleVocabPlugin::filterElement');
-        }
+        $front = Zend_Controller_Front::getInstance();
+        $front->registerPlugin(new SimpleVocab_Controller_Plugin_SelectFilter);
     }
     
     public static function filterElement($html, $inputNameStem, $value, 
