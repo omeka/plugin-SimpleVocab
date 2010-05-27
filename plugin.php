@@ -11,7 +11,7 @@ class SimpleVocabPlugin
     {
         $db = get_db();
         $sql = "
-CREATE TABLE `simple_vocab_terms` (
+CREATE TABLE `{$db->prefix}simple_vocab_terms` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `element_id` int(10) unsigned NOT NULL,
   `terms` text COLLATE utf8_unicode_ci NOT NULL,
