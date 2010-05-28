@@ -1,6 +1,18 @@
 <?php
 class SimpleVocab_IndexController extends Omeka_Controller_Action
 {
+    public function init()
+    {
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext->addActionContext('element-texts', 'html')
+                    ->addActionContext('element-terms', 'html');
+        // I have no idea why I have to force the HTML context here. The AJAX 
+        // context switch doesn't work otherwise. This may prove to be 
+        // problematic in the future.
+        // See: http://framework.zend.com/manual/en/zend.controller.actionhelpers.html
+        $ajaxContext->initContext('html');
+    }
+    
     public function indexAction()
     {
         $this->view->terms = $this->getTable('SimpleVocabTerm')->findAll();
@@ -46,21 +58,19 @@ class SimpleVocab_IndexController extends Omeka_Controller_Action
         $this->redirect->goto('index');
     }
     
-    // @todo: try to implement AjaxContext, which did not work in early testing.
     public function elementTermsAction()
     {
         $db = get_db();
         $elementId = $this->getRequest()->getParam('element_id');
         $simpleVocabTerm = $this->getTable('SimpleVocabTerm')->findByElementId($elementId);
         if ($simpleVocabTerm) {
-             echo $simpleVocabTerm->terms;
+            $terms = $simpleVocabTerm->terms;
         } else {
-            echo '';
+            $terms = '';
         }
-        exit;
+        $this->view->terms = $terms;
     }
     
-    // @todo: try to implement AjaxContext, which did not work in early testing.
     public function elementTextsAction()
     {
         $db = get_db();
@@ -75,30 +85,13 @@ class SimpleVocab_IndexController extends Omeka_Controller_Action
         
         $simpleVocabTerm = $this->getTable('SimpleVocabTerm')->findByElementId($elementId);
         if ($simpleVocabTerm) {
-            $termsArr = explode("\n", $simpleVocabTerm->terms);
+            $terms = explode("\n", $simpleVocabTerm->terms);
+        } else {
+            $terms = array();
         }
-?>
-<table>
-    <tr>
-        <th>Count</th>
-        <th>Warnings</th>
-        <th>Text</th>
-    </tr>
-    <?php foreach ($elementTexts as $elementText):
-        $warnings = array();
-        if ($simpleVocabTerm && !in_array($elementText->text, $termsArr)) $warnings[] = 'Not in vocabulary.';
-        if (100 < strlen($elementText->text)) $warnings[] = 'Long text.';
-        if (strstr($elementText->text, "\n")) $warnings[] = 'Contains newlines.';
-        ?>
-    <tr>
-        <td><?php echo $elementText->count; ?></td>
-        <td style="color:red;"><?php echo implode("<br />", $warnings); ?></td>
-        <td><?php echo nl2br($elementText->text); ?></td>
-    </tr>
-    <?php endforeach; ?>
-</table>
-<?php
-        exit;
+        $this->view->elementTexts    = $elementTexts;
+        $this->view->simpleVocabTerm = $simpleVocabTerm;
+        $this->view->terms           = $terms;
     }
     
     // @todo: seperate the item type metadata element set into discreet item 
