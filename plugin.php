@@ -34,19 +34,6 @@ CREATE TABLE `{$db->prefix}simple_vocab_terms` (
         $front->registerPlugin(new SimpleVocab_Controller_Plugin_SelectFilter);
     }
     
-    public static function filterElement($html, $inputNameStem, $value, 
-                                         $options, $record, $element)
-    {
-        $db = get_db();
-        $simpleVocabTerm = $db->getTable('SimpleVocabTerm')->findByElementId($element->id);
-        $terms = explode("\n", $simpleVocabTerm->terms);
-        $selectTerms = array('' => 'Select Below') + array_combine($terms, $terms);
-        return __v()->formSelect($inputNameStem . '[text]',
-                                 $value,
-                                 $options,
-                                 $selectTerms);
-    }
-    
     public static function adminNavigationMain($nav)
     {
         $nav['Simple Vocab'] = uri('simple-vocab');

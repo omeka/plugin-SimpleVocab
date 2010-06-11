@@ -3,7 +3,9 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
 {
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
-        $actions = array('edit', 'add', 'element-form');
+        // Include all item actions that render an element form, including 
+        // actions requested via AJAX.
+        $actions = array('edit', 'add', 'element-form', 'change-type');
         if ('items' == $request->getControllerName() 
             && in_array($request->getActionName(), $actions)) {
             // filter elements

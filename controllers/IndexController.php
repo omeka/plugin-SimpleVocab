@@ -94,23 +94,40 @@ class SimpleVocab_IndexController extends Omeka_Controller_Action
         $this->view->terms           = $terms;
     }
     
-    // @todo: seperate the item type metadata element set into discreet item 
-    // types to avoid element ambiguity.
+    // @todo: port below SQL to Zend_Db_Select.
     private function _getFormSelectOptions()
     {
         $db = get_db();
-        $elementSets = $db->getTable('ElementSet')->findAll();
+        $sql = "
+SELECT es.name AS element_set_name, it.name AS item_type_name, 
+e.id AS element_id, e.name AS element_name, svt.id AS simple_vocab_term_id 
+FROM {$db->prefix}record_types rt 
+JOIN {$db->prefix}element_sets es 
+ON rt.id = es.record_type_id 
+JOIN {$db->prefix}elements e 
+ON es.id = e.element_set_id 
+LEFT JOIN {$db->prefix}item_types_elements ite 
+ON e.id = ite.element_id 
+LEFT JOIN {$db->prefix}item_types it 
+ON ite.item_type_id = it.id 
+LEFT JOIN {$db->prefix}simple_vocab_terms as svt 
+ON e.id = svt.element_id 
+WHERE (
+    rt.name = 'All' 
+    OR rt.name = 'Item'
+)
+ORDER BY es.name, it.name, e.name";
+        $elements = $db->fetchAll($sql);
         $options = array('' => 'Select Below');
-        foreach ($elementSets as $elementSet) {
-            $elements = $db->getTable('Element')->findBySet($elementSet->name);
-            foreach ($elements as $element) {
-                $selectValue = $element->name;
-                $simpleVocabTerm = $this->getTable('SimpleVocabTerm')->findByElementId($element->id);
-                if ($simpleVocabTerm) {
-                    $selectValue = $selectValue . ' *';
-                }
-                $options[$elementSet->name][$element->id] = $selectValue;
+        foreach ($elements as $element) {
+            $optGroup = $element['item_type_name'] 
+                      ? 'Item Type: ' . $element['item_type_name'] 
+                      : $element['element_set_name'];
+            $value = $element['element_name'];
+            if ($element['simple_vocab_term_id']) {
+                $value .= ' *';
             }
+            $options[$optGroup][$element['element_id']] = $value;
         }
         return $options;
     }
