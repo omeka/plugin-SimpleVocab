@@ -94,30 +94,31 @@ class SimpleVocab_IndexController extends Omeka_Controller_Action
         $this->view->terms           = $terms;
     }
     
-    // @todo: port below SQL to Zend_Db_Select.
     private function _getFormSelectOptions()
     {
         $db = get_db();
-        $sql = "
-SELECT es.name AS element_set_name, it.name AS item_type_name, 
-e.id AS element_id, e.name AS element_name, svt.id AS simple_vocab_term_id 
-FROM {$db->prefix}record_types rt 
-JOIN {$db->prefix}element_sets es 
-ON rt.id = es.record_type_id 
-JOIN {$db->prefix}elements e 
-ON es.id = e.element_set_id 
-LEFT JOIN {$db->prefix}item_types_elements ite 
-ON e.id = ite.element_id 
-LEFT JOIN {$db->prefix}item_types it 
-ON ite.item_type_id = it.id 
-LEFT JOIN {$db->prefix}simple_vocab_terms as svt 
-ON e.id = svt.element_id 
-WHERE (
-    rt.name = 'All' 
-    OR rt.name = 'Item'
-)
-ORDER BY es.name, it.name, e.name";
-        $elements = $db->fetchAll($sql);
+        $select = $db->select()
+                     ->from(array('rt' => $db->RecordType), 
+                            array())
+                     ->join(array('es' => $db->ElementSet), 
+                            'rt.id = es.record_type_id', 
+                            array('element_set_name' => 'name'))
+                     ->join(array('e' => $db->Element), 
+                            'es.id = e.element_set_id', 
+                            array('element_id' =>'e.id', 
+                                  'element_name' => 'e.name'))
+                     ->joinLeft(array('ite' => $db->ItemTypesElements), 
+                                'e.id = ite.element_id',
+                                array())
+                     ->joinLeft(array('it' => $db->ItemType), 
+                                'ite.item_type_id = it.id', 
+                                array('item_type_name' => 'it.name'))
+                     ->joinLeft(array('svt' => $db->SimpleVocabTerm), 
+                                'e.id = svt.element_id', 
+                                array('simple_vocab_term_id' => 'svt.id'))
+                     ->where('rt.name = "All" OR rt.name = "Item"')
+                     ->order(array('es.name', 'it.name', 'e.name'));
+        $elements = $db->fetchAll($select);
         $options = array('' => 'Select Below');
         foreach ($elements as $element) {
             $optGroup = $element['item_type_name'] 
