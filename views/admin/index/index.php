@@ -5,30 +5,26 @@ head($head);
 ?>
 <script type="text/javascript" charset="utf-8">
 //<![CDATA[
-    Event.observe(window, 'load', function(){
-        Event.observe('element-id', 'change', function(event){
-            new Ajax.Request(<?php echo js_escape(uri(array('module' => 'simple-vocab', 
-                                                            'controller' => 'index', 
-                                                            'action' => 'element-terms'))); ?>, {
-                method: 'get',
-                parameters: {'element_id': $('element-id').getValue()},
-                onComplete: function(transport) {
-                    $('terms').value = transport.responseText;
-                }
-            })
-        });
-        Event.observe('display-texts', 'click', function(event){
-            new Ajax.Request(<?php echo js_escape(uri(array('module' => 'simple-vocab', 
-                                                            'controller' => 'index', 
-                                                            'action' => 'element-texts'))); ?>, {
-                method: 'get',
-                parameters: {'element_id': $('element-id').getValue()},
-                onComplete: function(transport) {
-                    $('texts').update(transport.responseText);
-                }
-            })
+jQuery(window).load(function () {
+    jQuery('#element-id').change(function() {
+        jQuery.ajax({
+            url: <?php echo js_escape(uri(array('action' => 'element-terms'))); ?>,
+            data: {element_id: jQuery('#element-id').val()},
+            success: function(data) {
+                jQuery('#terms').val(data);
+            }
         });
     });
+    jQuery('#display-texts').click(function() {
+        jQuery.ajax({
+            url: <?php echo js_escape(uri(array('action' => 'element-texts'))); ?>,
+            data: {element_id: jQuery('#element-id').val()},
+            success: function(data) {
+                jQuery('#texts').html(data);
+            }
+        });
+    });
+});
 //]]>
 </script>
 <h1><?php echo $head['title']; ?></h1>
@@ -67,8 +63,9 @@ head($head);
                                      array('class' => 'submit submit-large')); ?>
     </form>
     <p><a id="display-texts" href="#display-texts"><strong>Click here</strong></a> 
-    to display a list of texts that currently exist in your archive. You may use 
-    this list as a reference to build a vocabulary, but be aware of some caveats:</p>
+    to display a list of texts for the selected element that currently exist in 
+    your archive. You may use this list as a reference to build a vocabulary, 
+    but be aware of some caveats:</p>
     <ul style="list-style: disc;margin-left: 1.5em;">
         <li>Vocabulary terms must not contain newlines (line breaks).</li>
         <li>Vocabulary terms are typically short and concise. If your existing 

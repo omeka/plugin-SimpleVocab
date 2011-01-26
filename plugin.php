@@ -11,13 +11,13 @@ class SimpleVocabPlugin
     {
         $db = get_db();
         $sql = "
-CREATE TABLE `{$db->prefix}simple_vocab_terms` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `element_id` int(10) unsigned NOT NULL,
-  `terms` text COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `element_id` (`element_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+        CREATE TABLE `{$db->prefix}simple_vocab_terms` (
+            `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+            `element_id` int(10) unsigned NOT NULL,
+            `terms` text COLLATE utf8_unicode_ci NOT NULL,
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `element_id` (`element_id`)
+        ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
         $db->query($sql);
     }
     

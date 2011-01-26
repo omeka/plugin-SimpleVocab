@@ -1,3 +1,6 @@
+<?php if (!count($this->elementTexts)): ?>
+<p><strong>No texts for the selected element exist in your archive.</strong></p>
+<?php else: ?>
 <table>
     <tr>
         <th>Count</th>
@@ -17,3 +20,4 @@
     </tr>
     <?php endforeach; ?>
 </table>
+<?php endif; ?>
