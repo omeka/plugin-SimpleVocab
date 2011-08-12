@@ -41,11 +41,11 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
                                      $element->name), 
                                array($this, 'filterElement'));
                 }
+                // Once the filter is applied for one action it is applied
+                // for all subsequent actions, so there is no need to
+                // continue looping the routes.
+                break;
             }
-            // Once the filter is applied for one action it is applied
-            // for all subsequent actions, so there is no need to
-            // continue looping the routes.
-            break;
         }
     }
     
