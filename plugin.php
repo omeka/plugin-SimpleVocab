@@ -2,6 +2,7 @@
 add_plugin_hook('install', 'SimpleVocabPlugin::install');
 add_plugin_hook('uninstall', 'SimpleVocabPlugin::uninstall');
 add_plugin_hook('initialize', 'SimpleVocabPlugin::initialize');
+add_plugin_hook('define_acl', 'SimpleVocabPlugin::defineAcl');
 
 add_filter('admin_navigation_main', 'SimpleVocabPlugin::adminNavigationMain');
 
@@ -38,5 +39,12 @@ class SimpleVocabPlugin
     {
         $nav['Simple Vocab'] = uri('simple-vocab');
         return $nav;
+    }
+    
+    public static function defineAcl($acl)
+    {
+        $acl->loadResourceList(array('SimpleVocab_Index' => array(
+            'index', 'editElementTerms', 'elementTerms', 'elementTexts'
+        )));
     }
 }
