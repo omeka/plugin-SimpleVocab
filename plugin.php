@@ -21,30 +21,35 @@ class SimpleVocabPlugin
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
         $db->query($sql);
     }
-    
+
     public static function uninstall()
     {
         $db = get_db();
         $sql = "DROP TABLE IF EXISTS `{$db->prefix}simple_vocab_terms`;";
         $db->query($sql);
     }
-    
+
     public static function initialize()
     {
         $front = Zend_Controller_Front::getInstance();
         $front->registerPlugin(new SimpleVocab_Controller_Plugin_SelectFilter);
     }
-    
+
     public static function adminNavigationMain($nav)
     {
         $nav['Simple Vocab'] = uri('simple-vocab');
         return $nav;
     }
-    
+
     public static function defineAcl($acl)
     {
-        $acl->loadResourceList(array('SimpleVocab_Index' => array(
-            'index', 'editElementTerms', 'elementTerms', 'elementTexts'
-        )));
+        if (version_compare(OMEKA_VERSION, '2.0-dev', '>=')) {
+            $acl->addResource('SimpleVocab_Index');
+        } else {
+            $acl->loadResourceList(array('SimpleVocab_Index' => array(
+                'index', 'editElementTerms', 'elementTerms', 'elementTexts'
+            )));
+        }
+
     }
 }
