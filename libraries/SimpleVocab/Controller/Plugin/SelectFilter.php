@@ -1,6 +1,8 @@
 <?php
 class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_Abstract
 {
+    protected $_elementIds = array();
+    
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
         $db = get_db();
@@ -31,8 +33,10 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
             if ($route['module'] === $module 
              && $route['controller'] === $controller 
              && in_array($action, $route['actions'])) {
+                add_filter('element_form_display_html_flag', array($this, 'elementFormDisplayHtmlFlag'));
                 $simpleVocabTerms = $db->getTable('SimpleVocabTerm')->findAll();
                 foreach ($simpleVocabTerms as $simpleVocabTerm) {
+                    $this->_elementIds[] = $simpleVocabTerm->element_id;
                     $element = $db->getTable('Element')->find($simpleVocabTerm->element_id);
                     $elementSet = $db->getTable('ElementSet')->find($element->element_set_id);
                     add_filter(array('Form', 
@@ -60,5 +64,13 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
                                  $value,
                                  $options,
                                  $selectTerms);
+    }
+    
+    public function elementFormDisplayHtmlFlag($html, $element)
+    {
+        if (in_array($element->id, $this->_elementIds)) {
+            $html = '';
+        }
+        return $html;
     }
 }
