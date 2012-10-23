@@ -1,76 +1,93 @@
 <?php
+/**
+ * Simple Vocab
+ * 
+ * @copyright Copyright 2007-2012 Roy Rosenzweig Center for History and New Media
+ * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU GPLv3
+ */
+
+/**
+ * Filter selected form elements to a select menu containing custom terms.
+ * 
+ * @package Omeka\Plugins\SimpleVocab
+ */
 class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_Abstract
 {
-    protected $_elementIds = array();
+    /**
+     * All routes that render an item element form, including those requested 
+     * via AJAX.
+     * 
+     * @var array
+     */
+    protected $_defaultRoutes = array(
+        array('module' => 'default', 'controller' => 'items', 
+              'actions' => array('add', 'edit', 'change-type')), 
+        array('module' => 'default', 'controller' => 'elements', 
+              'actions' => array('element-form')), 
+    );
     
-    public function preDispatch(Zend_Controller_Request_Abstract $request)
+    /**
+     * Set the filters pre-dispatch only on configured routes.
+     * 
+     * @param Zend_Controller_Request_Abstract
+     */
+    public function preDispatch($request)
     {
         $db = get_db();
         
-        // Set NULL modules to default. Some routes do not have a default 
-        // module, which resolves to NULL.
-        $module = $request->getModuleName();
-        if (is_null($module)) {
-            $module = 'default';
-        }
-        $controller = $request->getControllerName();
-        $action = $request->getActionName();
+        // Some routes don't have a default module, which resolves to NULL.
+        $currentModule = is_null($request->getModuleName()) ? 'default' : $request->getModuleName();
+        $currentController = $request->getControllerName();
+        $currentAction = $request->getActionName();
         
-        // Include all item actions that render an element form, including 
-        // actions requested via AJAX.
-        $routes = array(
-            array('module' => 'default', 
-                  'controller' => 'items', 
-                  'actions' => array('add', 'edit', 'element-form', 'change-type'))
-        );
-        
-        // Allow plugins to add routes that contain form inputs rendered by 
+        // Allow plugins to register routes that contain form inputs rendered by 
         // Omeka_View_Helper_ElementForm::_displayFormInput().
-        $routes = apply_filters('simple_vocab_routes', $routes);
+        $routes = apply_filters('simple_vocab_routes', $this->_defaultRoutes);
         
         // Apply filters to defined routes.
         foreach ($routes as $route) {
-            if ($route['module'] === $module 
-             && $route['controller'] === $controller 
-             && in_array($action, $route['actions'])) {
-                add_filter('element_form_display_html_flag', array($this, 'elementFormDisplayHtmlFlag'));
-                $simpleVocabTerms = $db->getTable('SimpleVocabTerm')->findAll();
-                foreach ($simpleVocabTerms as $simpleVocabTerm) {
-                    $this->_elementIds[] = $simpleVocabTerm->element_id;
-                    $element = $db->getTable('Element')->find($simpleVocabTerm->element_id);
-                    $elementSet = $db->getTable('ElementSet')->find($element->element_set_id);
-                    add_filter(array('Form', 
-                                     'Item', 
-                                     $elementSet->name, 
-                                     $element->name), 
-                               array($this, 'filterElement'));
-                }
-                // Once the filter is applied for one action it is applied
-                // for all subsequent actions, so there is no need to
-                // continue looping the routes.
-                break;
+            
+            // Check registered routed against the current route.
+            if ($route['module'] != $currentModule 
+             || $route['controller'] != $currentController 
+             || !in_array($currentAction, $route['actions']))
+            {
+                continue;
             }
+            
+            // Add the filters if the current route is registered.
+            $simpleVocabTerms = $db->getTable('SimpleVocabTerm')->findAll();
+            foreach ($simpleVocabTerms as $simpleVocabTerm) {
+                $element = $db->getTable('Element')->find($simpleVocabTerm->element_id);
+                $elementSet = $db->getTable('ElementSet')->find($element->element_set_id);
+                add_filter(array('ElementInput', 'Item', $elementSet->name, $element->name), 
+                           array($this, 'filterElementInput'));
+            }
+            // Once the filter is applied for one route there is no need to 
+            // continue looping the routes.
+            break;
         }
     }
     
-    public function filterElement($html, $inputNameStem, $value, $options, 
-                                    $record, $element)
+    /**
+     * Filter the element input.
+     * 
+     * @param array $components
+     * @param array $args
+     * @return array
+     */
+    public function filterElementInput($components, $args)
     {
-        $db = get_db();
-        $simpleVocabTerm = $db->getTable('SimpleVocabTerm')->findByElementId($element->id);
+        $simpleVocabTerm = get_db()->getTable('SimpleVocabTerm')->findByElementId($args['element']->id);
         $terms = explode("\n", $simpleVocabTerm->terms);
         $selectTerms = array('' => 'Select Below') + array_combine($terms, $terms);
-        return __v()->formSelect($inputNameStem . '[text]',
-                                 $value,
-                                 $options,
-                                 $selectTerms);
-    }
-    
-    public function elementFormDisplayHtmlFlag($html, $element)
-    {
-        if (in_array($element->id, $this->_elementIds)) {
-            $html = '';
-        }
-        return $html;
+        $components['input'] = get_view()->formSelect(
+            $args['input_name_stem'] . '[text]', 
+            $args['value'], 
+            array('style' => 'width: 300px;'), 
+            $selectTerms
+        );
+        $components['html_checkbox'] = false;
+        return $components;
     }
 }
