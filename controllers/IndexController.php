@@ -13,9 +13,6 @@
  */
 class SimpleVocab_IndexController extends Omeka_Controller_AbstractActionController
 {
-    protected $_actionContexts = array('element-texts' => 'html', 
-                                       'element-terms' => 'html');
-    
     /**
      * Initialize this controller.
      */
@@ -23,7 +20,8 @@ class SimpleVocab_IndexController extends Omeka_Controller_AbstractActionControl
     {
         // Restrict actions to AJAX requests.
         $this->_helper->getHelper('AjaxContext')
-                      ->addActionContexts($this->_actionContexts)
+                      ->addActionContexts(array('element-texts' => 'html', 
+                                                'element-terms' => 'html'))
                       ->initContext();
     }
     
@@ -56,11 +54,11 @@ class SimpleVocab_IndexController extends Omeka_Controller_AbstractActionControl
              // Delete term record if there are no terms.
              if ('' == trim($terms)) {
                  $simpleVocabTerm->delete();
-                 $this->_helper->flashMessenger('Successfully deleted the element\'s vocabulary terms.', 'success');
+                 $this->_helper->flashMessenger(__('Successfully deleted the element\'s vocabulary terms.'), 'success');
                  $this->_helper->redirector('index');
              }
              $simpleVocabTerm->terms = $this->_sanitizeTerms($terms);
-             $this->_helper->flashMessenger('Successfully edited the element\'s vocabulary terms.', 'success');
+             $this->_helper->flashMessenger(__('Successfully edited the element\'s vocabulary terms.'), 'success');
         
         // Handle a new term record.
         } else {
@@ -71,7 +69,7 @@ class SimpleVocab_IndexController extends Omeka_Controller_AbstractActionControl
             $simpleVocabTerm = new SimpleVocabTerm;
             $simpleVocabTerm->element_id = $elementId;
             $simpleVocabTerm->terms = $this->_sanitizeTerms($terms);
-            $this->_helper->flashMessenger('Successfully added the element\'s vocabulary terms.', 'success');
+            $this->_helper->flashMessenger(__('Successfully added the element\'s vocabulary terms.'), 'success');
         }
         $simpleVocabTerm->save();
         $this->_helper->redirector('index');
@@ -102,17 +100,40 @@ class SimpleVocab_IndexController extends Omeka_Controller_AbstractActionControl
     public function elementTextsAction()
     {
         $elementId = $this->getRequest()->getParam('element_id');
-        $simpleVocabTerm = $this->_helper->db->getTable('SimpleVocabTerm');
-        $elementTexts = $simpleVocabTerm->findElementTexts($elementId);
-        $simpleVocabTerm = $simpleVocabTerm->findByElementId($elementId);
+        $table = $this->_helper->db->getTable('SimpleVocabTerm');
+        
+        // Get the element's vocab terms, if any.
+        $simpleVocabTerm = $table->findByElementId($elementId);
         if ($simpleVocabTerm) {
             $terms = explode("\n", $simpleVocabTerm->terms);
         } else {
             $terms = array();
         }
+        
+        $warningMessages = array('notInVocab' => __('Not in vocabulary.'), 
+                                 'longText' => __('Long text.'), 
+                                 'containsNewlines' => __('Contains newlines.'));
+        
+        // Get the element's element texts, if any.
+        $elementTexts = array();
+        foreach ($table->findElementTexts($elementId) as $elementText) {
+            $warnings = array();
+            if ($simpleVocabTerm && !in_array($elementText->text, $terms)) {
+                $warnings[] = $warningMessages['notInVocab'];
+            }
+            if (100 < strlen($elementText->text)) {
+                $warnings[] = $warningMessages['longText'];
+            }
+            if (strstr($elementText->text, "\n")) {
+                $warnings[] = $warningMessages['containsNewlines'];
+            }
+            
+            $elementTexts[] = array('warnings' => $warnings, 
+                                    'count' => $elementText->count, 
+                                    'text' => $elementText->text);
+        }
+        
         $this->view->element_texts = $elementTexts;
-        $this->view->simple_vocab_term = $simpleVocabTerm;
-        $this->view->terms = $terms;
     }
     
     /**
@@ -123,14 +144,14 @@ class SimpleVocab_IndexController extends Omeka_Controller_AbstractActionControl
     private function _getOptionsForSelect()
     {
         $elements = $this->_helper->db->getTable('SimpleVocabTerm')->findElementsForSelect();
-        $options = array('' => 'Select Below');
+        $options = array('' => __('Select Below'));
         foreach ($elements as $element) {
             if ($element['item_type_name']) {
-                $optGroup = 'Item Type: ' . $element['item_type_name'];
+                $optGroup = __('Item Type') . ': ' . __($element['item_type_name']);
             } else {
-                $optGroup = $element['element_set_name'];
+                $optGroup = __($element['element_set_name']);
             }
-            $value = $element['element_name'];
+            $value = __($element['element_name']);
             if ($element['simple_vocab_term_id']) {
                 $value .= ' *';
             }
