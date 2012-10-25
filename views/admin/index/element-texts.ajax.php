@@ -10,7 +10,7 @@
     <?php foreach ($element_texts as $element_text): ?>
     <tr>
         <td><?php echo $element_text['count']; ?></td>
-        <td style="color:red;"><?php echo implode("<br />", $element_text['warnings']); ?></td>
+        <td class="error"><?php echo implode("<br />", $element_text['warnings']); ?></td>
         <td><?php echo snippet(nl2br($element_text['text']), 0, 600); ?></td>
     </tr>
     <?php endforeach; ?>
