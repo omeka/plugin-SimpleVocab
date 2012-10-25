@@ -67,6 +67,7 @@ class Table_SimpleVocabTerm extends Omeka_Db_Table
                      ->from($db->ElementText, array('text', 'COUNT(*) AS count'))
                      ->group('text')
                      ->where('element_id = ?', $elementId)
+                     ->where('record_type = ?', 'Item')
                      ->order('count DESC');
         return $db->getTable('ElementText')->fetchObjects($select);
     }
