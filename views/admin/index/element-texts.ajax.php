@@ -1,5 +1,5 @@
 <?php if (!$element_texts): ?>
-<p><strong><?php echo __('No texts for the selected element exist in Omeka.'); ?></strong></p>
+<p class="error"><?php echo __('No texts for the selected element exist in Omeka.'); ?></p>
 <?php else: ?>
 <table>
     <tr>

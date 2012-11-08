@@ -71,5 +71,5 @@ jQuery(window).load(function () {
     </div>
 </section>
 </form>
-<div id="texts"></div>
+<section id="texts" class="ten columns alpha"></section>
 <?php echo foot(); ?>
