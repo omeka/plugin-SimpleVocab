@@ -58,6 +58,8 @@ class SimpleVocabPlugin extends Omeka_Plugin_AbstractPlugin
         // Register the select filter controller plugin.
         $front = Zend_Controller_Front::getInstance();
         $front->registerPlugin(new SimpleVocab_Controller_Plugin_SelectFilter);
+        //Add translation
+        add_translation_source(dirname(__FILE__) . '/languages');
     }
     
     /**
