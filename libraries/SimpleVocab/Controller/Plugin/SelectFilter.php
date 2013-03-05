@@ -27,6 +27,11 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
     );
     
     /**
+     * Cached vocab terms.
+     */
+    protected $_simpleVocabTerms;
+    
+    /**
      * Set the filters pre-dispatch only on configured routes.
      * 
      * @param Zend_Controller_Request_Abstract
@@ -55,10 +60,14 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
                 continue;
             }
             
-            // Add the filters if the current route is registered.
-            $simpleVocabTerms = $db->getTable('SimpleVocabTerm')->findAll();
-            foreach ($simpleVocabTerms as $simpleVocabTerm) {
-                $element = $db->getTable('Element')->find($simpleVocabTerm->element_id);
+            // Add the filters if the current route is registered. Cache the 
+            // vocab terms for use by the filter callbacks.
+            $select = $db->getTable('SimpleVocabTerm')->getSelect()
+                ->reset(Zend_Db_Select::COLUMNS)
+                ->columns(array('element_id', 'terms'));
+            $this->_simpleVocabTerms = $db->fetchPairs($select);
+            foreach ($this->_simpleVocabTerms as $element_id => $terms) {
+                $element = $db->getTable('Element')->find($element_id);
                 $elementSet = $db->getTable('ElementSet')->find($element->element_set_id);
                 add_filter(array('ElementInput', 'Item', $elementSet->name, $element->name), 
                            array($this, 'filterElementInput'));
@@ -78,8 +87,8 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
      */
     public function filterElementInput($components, $args)
     {
-        $simpleVocabTerm = get_db()->getTable('SimpleVocabTerm')->findByElementId($args['element']->id);
-        $terms = explode("\n", $simpleVocabTerm->terms);
+        // Use the cached vocab terms instead of 
+        $terms = explode("\n", $this->_simpleVocabTerms[$args['element']->id]);
         $selectTerms = array('' => 'Select Below') + array_combine($terms, $terms);
         $components['input'] = get_view()->formSelect(
             $args['input_name_stem'] . '[text]', 
