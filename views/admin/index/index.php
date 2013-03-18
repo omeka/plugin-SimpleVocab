@@ -46,7 +46,7 @@ jQuery(window).load(function () {
             <?php echo $this->formTextarea('terms', null, array('id' => 'terms', 'rows' => '10')) ?>
             <p class="explanation"><?php echo __('Enter the custom vocabulary ' 
             . 'terms for this element, one per line. To delete the vocabulary, ' 
-            . 'simply remove the terms and sumbit this form.'); ?></p>
+            . 'simply remove the terms and submit this form.'); ?></p>
         </div>
     </div>
 <p><?php echo __('%sClick here%s to display a list of texts for the selected element ' 
