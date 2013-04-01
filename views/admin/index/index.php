@@ -67,7 +67,7 @@ jQuery(window).load(function () {
 </section>
 <section class="three columns omega">
     <div id="edit" class="panel">
-        <?php echo $this->formSubmit('edit_vocab', 'Add/Edit Vocabulary', array('class' => 'submit big green button')); ?>
+        <?php echo $this->formSubmit('edit_vocab', __('Add/Edit Vocabulary'), array('class' => 'submit big green button')); ?>
     </div>
 </section>
 </form>
