@@ -77,9 +77,11 @@ class SimpleVocabPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function filterAdminNavigationMain($nav)
     {
-        if(is_allowed('SimpleVocab_Index', 'index')) {
-            $nav[] = array('label' => __('Simple Vocab'), 'uri' => url('simple-vocab'));
-        }
+        $nav[] = array(
+            'label' => __('Simple Vocab'),
+            'uri' => url('simple-vocab'),
+            'resource' => 'SimpleVocab_Index'
+        );
         return $nav;
     }
 }
