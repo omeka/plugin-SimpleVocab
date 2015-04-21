@@ -22,8 +22,10 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
     protected $_defaultRoutes = array(
         array('module' => 'default', 'controller' => 'items', 
               'actions' => array('add', 'edit', 'change-type')), 
-        array('module' => 'default', 'controller' => 'elements', 
-              'actions' => array('element-form')), 
+        array('module' => 'default', 'controller' => 'files',
+              'actions' => array('add', 'edit', 'change-type')),
+        array('module' => 'default', 'controller' => 'elements',
+              'actions' => array('element-form')),
     );
     
     /**
@@ -44,7 +46,7 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
         $currentModule = is_null($request->getModuleName()) ? 'default' : $request->getModuleName();
         $currentController = $request->getControllerName();
         $currentAction = $request->getActionName();
-        
+
         // Allow plugins to register routes that contain form inputs rendered by 
         // Omeka_View_Helper_ElementForm::_displayFormInput().
         $routes = apply_filters('simple_vocab_routes', $this->_defaultRoutes);
@@ -70,7 +72,10 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
                 $element = $db->getTable('Element')->find($element_id);
                 $elementSet = $db->getTable('ElementSet')->find($element->element_set_id);
                 add_filter(array('ElementInput', 'Item', $elementSet->name, $element->name), 
-                           array($this, 'filterElementInput'));
+                          array($this, 'filterElementInput'));
+                add_filter(array('ElementInput', 'File', $elementSet->name, $element->name),
+                          array($this, 'filterElementInput'));
+
             }
             // Once the filter is applied for one route there is no need to 
             // continue looping the routes.
