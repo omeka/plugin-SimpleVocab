@@ -23,7 +23,7 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
         array('module' => 'default', 'controller' => 'items', 
               'actions' => array('add', 'edit', 'change-type')), 
         array('module' => 'default', 'controller' => 'files',
-              'actions' => array('add', 'edit', 'change-type')),
+              'actions' => array('add', 'edit')),
         array('module' => 'default', 'controller' => 'elements',
               'actions' => array('element-form')),
     );
