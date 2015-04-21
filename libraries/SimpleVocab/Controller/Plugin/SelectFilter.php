@@ -75,7 +75,6 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
                            array($this, 'filterElementInput'));
                 add_filter(array('ElementInput', 'File', $elementSet->name, $element->name),
                            array($this, 'filterElementInput'));
-
             }
             // Once the filter is applied for one route there is no need to 
             // continue looping the routes.
