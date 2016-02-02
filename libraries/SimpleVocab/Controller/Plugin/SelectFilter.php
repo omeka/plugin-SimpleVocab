@@ -36,7 +36,7 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
      * 
      * @param Zend_Controller_Request_Abstract
      */
-    public function preDispatch($request)
+    public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
         $db = get_db();
         
