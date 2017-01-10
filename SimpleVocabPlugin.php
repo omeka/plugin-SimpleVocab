@@ -16,13 +16,20 @@ class SimpleVocabPlugin extends Omeka_Plugin_AbstractPlugin
     /**
      * @var array This plugin's hooks.
      */
-    protected $_hooks = array('install', 'uninstall', 'initialize', 'define_acl');
+    protected $_hooks = array(
+        'install', 'uninstall', 'initialize', 'upgrade',
+        'define_acl', 'config_form', 'config',
+    );
     
     /**
      * @var array This plugin's filters.
      */
     protected $_filters = array('admin_navigation_main');
     
+    protected $_options = array(
+        'simple_vocab_files' => 0,
+    );
+
     /**
      * Install this plugin.
      */
@@ -38,6 +45,7 @@ class SimpleVocabPlugin extends Omeka_Plugin_AbstractPlugin
             UNIQUE KEY `element_id` (`element_id`)
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
         $db->query($sql);
+        $this->_installOptions();
     }
     
     /**
@@ -48,6 +56,14 @@ class SimpleVocabPlugin extends Omeka_Plugin_AbstractPlugin
         $db = get_db();
         $sql = "DROP TABLE IF EXISTS `{$db->SimpleVocabTerm}`;";
         $db->query($sql);
+        $this->_uninstallOptions();
+    }
+
+    public function hookUpgrade($args)
+    {
+        if (version_compare($args['old_version'], '2.0.1', '<=')) {
+            set_option('simple_vocab_files', $this->_options['simple_vocab_files']);
+        }
     }
     
     /**
@@ -63,6 +79,21 @@ class SimpleVocabPlugin extends Omeka_Plugin_AbstractPlugin
         add_translation_source(dirname(__FILE__) . '/languages');
     }
     
+    public function hookConfigForm()
+    {
+        $view = get_view();
+        include 'config_form.php';
+    }
+
+    public function hookConfig($args)
+    {
+        $files = 0;
+        if (isset($args['post']['simple_vocab_files'])) {
+            $files = (int) $args['post']['simple_vocab_files'];
+        }
+        set_option('simple_vocab_files', $files);
+    }
+
     /**
      * Define this plugin's ACL.
      */
