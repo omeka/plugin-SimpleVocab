@@ -6,11 +6,14 @@ echo head($head);
 //<![CDATA[
 jQuery(window).load(function () {
   jQuery('#element-id').change(function() {
+    var submitButton = jQuery('#edit_vocab');
+    submitButton.prop('disabled', true);
     jQuery.ajax({
       url: <?php echo js_escape(url(array('action' => 'element-terms', 'format' => 'html'))); ?>,
       data: {element_id: jQuery('#element-id').val()},
       success: function(data) {
         jQuery('#terms').val(data);
+        submitButton.prop('disabled', false);
       }
     });
   });
