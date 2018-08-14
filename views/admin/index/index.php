@@ -18,7 +18,6 @@ jQuery(window).load(function () {
           url: <?php echo js_escape(url(array('action' => 'element-terms', 'format' => 'html'))); ?>,
           data: {element_id: elementId},
           success: function(data) {
-              console.log(data);
             jQuery('#terms').val(data);
             submitButton.prop('disabled', false);
             textarea.prop('disabled', false);
