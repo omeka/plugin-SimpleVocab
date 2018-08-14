@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the Omeka package.
 # 
 # Translators:
-# zhangh <zhangh@unlv.nevada.edu>, 2013
+# Hong Zhang <zhangh@unlv.nevada.edu>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Omeka\n"
-"Report-Msgid-Bugs-To: https://github.com/omeka/Omeka/issues\n"
+"Report-Msgid-Bugs-To: http://github.com/omeka/plugin-SimpleVocab/issues\n"
 "POT-Creation-Date: 2012-11-28 21:49-0500\n"
-"PO-Revision-Date: 2013-04-05 22:36+0000\n"
-"Last-Translator: zhangh <zhangh@unlv.nevada.edu>\n"
-"Language-Team: Chinese (China) (http://www.transifex.com/projects/p/omeka/language/zh_CN/)\n"
+"PO-Revision-Date: 2017-09-19 16:11+0000\n"
+"Last-Translator: Hong Zhang <zhangh@unlv.nevada.edu>\n"
+"Language-Team: Chinese (China) (http://www.transifex.com/omeka/omeka/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
