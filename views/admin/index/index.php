@@ -6,16 +6,25 @@ echo head($head);
 //<![CDATA[
 jQuery(window).load(function () {
   jQuery('#element-id').change(function() {
+    var elementId = jQuery('#element-id').val();
     var submitButton = jQuery('#edit_vocab');
+    var textarea = jQuery('#terms');
     submitButton.prop('disabled', true);
-    jQuery.ajax({
-      url: <?php echo js_escape(url(array('action' => 'element-terms', 'format' => 'html'))); ?>,
-      data: {element_id: jQuery('#element-id').val()},
-      success: function(data) {
-        jQuery('#terms').val(data);
-        submitButton.prop('disabled', false);
-      }
-    });
+    textarea.prop('disabled', true);
+    if ('' === elementId) {
+        textarea.val('');
+    } else {
+        jQuery.ajax({
+          url: <?php echo js_escape(url(array('action' => 'element-terms', 'format' => 'html'))); ?>,
+          data: {element_id: elementId},
+          success: function(data) {
+              console.log(data);
+            jQuery('#terms').val(data);
+            submitButton.prop('disabled', false);
+            textarea.prop('disabled', false);
+          }
+        });
+    }
   });
   jQuery('#display-texts').click(function() {
     jQuery.ajax({
@@ -46,7 +55,7 @@ jQuery(window).load(function () {
     <div class="field">
         <label for="terms"><?php echo __('Vocabulary Terms'); ?></label>
         <div class="inputs">
-            <?php echo $this->formTextarea('terms', null, array('id' => 'terms', 'rows' => '10')) ?>
+            <?php echo $this->formTextarea('terms', null, array('id' => 'terms', 'rows' => '10', 'disabled' => true)) ?>
             <p class="explanation"><?php echo __('Enter the custom vocabulary ' 
             . 'terms for this element, one per line. To delete the vocabulary, ' 
             . 'simply remove the terms and submit this form.'); ?></p>
@@ -70,7 +79,7 @@ jQuery(window).load(function () {
 </section>
 <section class="three columns omega">
     <div id="edit" class="panel">
-        <?php echo $this->formSubmit('edit_vocab', __('Add/Edit Vocabulary'), array('class' => 'submit big green button')); ?>
+        <?php echo $this->formSubmit('edit_vocab', __('Save Changes'), array('class' => 'submit big green button', 'disabled' => true)); ?>
     </div>
 </section>
 </form>
