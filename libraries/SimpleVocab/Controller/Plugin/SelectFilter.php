@@ -78,6 +78,9 @@ class SimpleVocab_Controller_Plugin_SelectFilter extends Zend_Controller_Plugin_
             $this->_simpleVocabTerms = $db->fetchPairs($select);
             foreach ($this->_simpleVocabTerms as $element_id => $terms) {
                 $element = $db->getTable('Element')->find($element_id);
+                if (!$element) {
+                    continue; // The element may have been deleted.
+                }
                 $elementSet = $db->getTable('ElementSet')->find($element->element_set_id);
                 add_filter(array('ElementInput', 'Item', $elementSet->name, $element->name), 
                            array($this, 'filterElementInput'));
