@@ -5,14 +5,14 @@
 # Translators:
 # Konstantina Elma <konstantinaelma@hotmail.com>, 2015
 # Marios Bekatoros <>, 2014
-# Γιάννης Κασκαμανίδης <kiolalis@gmail.com>, 2016
+# Yannis Kaskamanidis <kiolalis@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Omeka\n"
 "Report-Msgid-Bugs-To: http://github.com/omeka/plugin-SimpleVocab/issues\n"
 "POT-Creation-Date: 2012-11-28 21:49-0500\n"
 "PO-Revision-Date: 2017-09-19 16:11+0000\n"
-"Last-Translator: Γιάννης Κασκαμανίδης <kiolalis@gmail.com>\n"
+"Last-Translator: Yannis Kaskamanidis <kiolalis@gmail.com>\n"
 "Language-Team: Greek (Greece) (http://www.transifex.com/omeka/omeka/language/el_GR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
