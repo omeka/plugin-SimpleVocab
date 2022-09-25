@@ -53,7 +53,7 @@ jQuery(document).ready(function () {
     </div>
     <div class="field">
         <label for="terms"><?php echo __('Vocabulary Terms'); ?></label>
-        <div class="inputs">
+        <div class="responsive">
             <?php echo $this->formTextarea('terms', null, array('id' => 'terms', 'rows' => '10', 'disabled' => true)) ?>
             <p class="explanation"><?php echo __('Enter the custom vocabulary ' 
             . 'terms for this element, one per line. To delete the vocabulary, ' 
@@ -82,5 +82,5 @@ jQuery(document).ready(function () {
     </div>
 </section>
 </form>
-<section id="texts" class="ten columns alpha"></section>
+<section id="texts" class="responsive"></section>
 <?php echo foot(); ?>
