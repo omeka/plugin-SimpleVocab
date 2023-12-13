@@ -130,7 +130,8 @@ class SimpleVocab_IndexController extends Omeka_Controller_AbstractActionControl
             
             $elementTexts[] = array('warnings' => $warnings, 
                                     'count' => $elementText->count, 
-                                    'text' => $elementText->text);
+                                    'text' => $elementText->text,
+                                    'element_id' => $elementId);
         }
         
         $this->view->element_texts = $elementTexts;
