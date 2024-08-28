@@ -22,9 +22,9 @@
                     ),
                 ),
             )); ?>
-            <a target="blank" href="<?php echo $url; ?>"><?php echo snippet(nl2br($element_text['text']), 0, 600); ?></a>
+            <a target="blank" href="<?php echo html_escape($url); ?>"><?php echo nl2br(snippet(html_escape($element_text['text']), 0, 600)); ?></a>
         <?php else: ?>
-            <?php echo snippet(nl2br($element_text['text']), 0, 600); ?>
+            <?php echo nl2br(snippet(html_escape($element_text['text']), 0, 600)); ?>
         <?php endif; ?>
         </td>
     </tr>
