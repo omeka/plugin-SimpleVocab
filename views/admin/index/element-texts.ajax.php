@@ -11,7 +11,22 @@
     <tr>
         <td><?php echo $element_text['count']; ?></td>
         <td class="error"><?php echo implode("<br />", $element_text['warnings']); ?></td>
-        <td><?php echo snippet(nl2br($element_text['text']), 0, 600); ?></td>
+        <td>
+        <?php if (!get_option('simple_vocab_files')): ?>
+            <?php $url = url('items/browse', array(
+                'advanced' => array(
+                    array(
+                        'element_id' => $element_id,
+                        'type' => 'is exactly',
+                        'terms' => $element_text['text'],
+                    ),
+                ),
+            )); ?>
+            <a target="blank" href="<?php echo $url; ?>"><?php echo snippet(nl2br($element_text['text']), 0, 600); ?></a>
+        <?php else: ?>
+            <?php echo snippet(nl2br($element_text['text']), 0, 600); ?>
+        <?php endif; ?>
+        </td>
     </tr>
     <?php endforeach; ?>
 </table>
