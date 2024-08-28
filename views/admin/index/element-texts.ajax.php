@@ -10,7 +10,7 @@
     <?php foreach ($element_texts as $element_text): ?>
     <tr>
         <td><?php echo $element_text['count']; ?></td>
-        <td class="error"><?php echo implode("<br />", $element_text['warnings']); ?></td>
+        <td<?php if ($element_text['warnings']) { echo ' class="error"'; } ?>><?php echo implode("<br />", $element_text['warnings']); ?></td>
         <td>
         <?php if (!get_option('simple_vocab_files')): ?>
             <?php $url = url('items/browse', array(
