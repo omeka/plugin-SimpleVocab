@@ -40,7 +40,7 @@ class SimpleVocabPlugin extends Omeka_Plugin_AbstractPlugin
         CREATE TABLE `{$db->SimpleVocabTerm}` (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `element_id` int(10) unsigned NOT NULL,
-            `terms` text COLLATE utf8_unicode_ci NOT NULL,
+            `terms` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
             PRIMARY KEY (`id`),
             UNIQUE KEY `element_id` (`element_id`)
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
@@ -61,8 +61,12 @@ class SimpleVocabPlugin extends Omeka_Plugin_AbstractPlugin
 
     public function hookUpgrade($args)
     {
+        $db = get_db();
         if (version_compare($args['old_version'], '2.0.1', '<=')) {
             set_option('simple_vocab_files', $this->_options['simple_vocab_files']);
+        }
+        if (version_compare($args['old_version'], '2.4', '<')) {
+            $db->query("ALTER TABLE `{$db->SimpleVocabTerm}` MODIFY `terms` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL");
         }
     }
     
